@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 export function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState('todos')
@@ -90,9 +91,11 @@ export function Gallery() {
           {filteredItems.map((item) => (
             <div key={item.id} className="group cursor-pointer">
               <div className="relative overflow-hidden rounded-lg bg-white shadow-md">
-                <img
+                <Image
                   src={item.image}
                   alt={item.title}
+                  width={400}
+                  height={256}
                   className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity duration-300 flex items-center justify-center">

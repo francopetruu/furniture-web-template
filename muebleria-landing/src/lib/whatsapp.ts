@@ -1,6 +1,5 @@
 // lib/whatsapp.ts
 import type { Product } from '@/types'
-import { env } from './env'
 
 export interface WhatsAppConfig {
   phoneNumber: string
@@ -9,7 +8,8 @@ export interface WhatsAppConfig {
 
 // Obtener el número de teléfono desde las variables de ambiente
 export function getWhatsAppPhone(): string {
-  return env.whatsapp.phone.replace(/\D/g, '') // Remover caracteres no numéricos
+  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
+  return phone.replace(/\D/g, '') // Remover caracteres no numéricos
 }
 
 export function generateWhatsAppURL(

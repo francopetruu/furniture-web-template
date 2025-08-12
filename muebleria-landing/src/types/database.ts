@@ -36,7 +36,58 @@ export interface Database {
           updated_at?: string
         }
       }
-      // Add more tables as needed
+      inquiries: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          phone: string
+          message: string
+          product_id: string | null
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          phone: string
+          message: string
+          product_id?: string | null
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          phone?: string
+          message?: string
+          product_id?: string | null
+          status?: string
+          created_at?: string
+        }
+      }
+      categories: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

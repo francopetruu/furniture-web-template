@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { env } from '@/lib/env'
 
 export const metadata = {
   title: 'Nosotros - Muebleria Familiar',
@@ -155,7 +154,7 @@ export default function NosotrosPage() {
               Contactanos
             </a>
             <a
-              href={`https://wa.me/${env.whatsapp.phone}?text=${encodeURIComponent('Hola! Me gustaria conocer mas sobre Muebleria Familiar.')}`}
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE}?text=${encodeURIComponent('Hola! Me gustaria conocer mas sobre Muebleria Familiar.')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-green-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-600 transition-colors"

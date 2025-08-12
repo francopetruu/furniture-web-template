@@ -1,32 +1,33 @@
 /**
  * Hook personalizado para acceder a variables de ambiente en componentes React
+ * Solo incluye variables seguras para el cliente
  */
 
 import { useMemo } from 'react';
-import { env } from '@/lib/env';
+import { envClient } from '@/lib/env-client';
 
 export function useEnv() {
   return useMemo(() => ({
-    // Configuración de Supabase (disponible en cliente y servidor)
+    // Configuración de Supabase (disponible en cliente)
     supabase: {
-      url: env.supabase.url,
-      anonKey: env.supabase.anonKey,
+      url: envClient.supabase.url,
+      anonKey: envClient.supabase.anonKey,
     },
     
     // Configuración de WhatsApp (disponible en cliente)
     whatsapp: {
-      phone: env.whatsapp.phone,
+      phone: envClient.whatsapp.phone,
     },
     
     // Configuración de Analytics (disponible en cliente)
     analytics: {
-      gaId: env.analytics.gaId,
+      gaId: envClient.analytics.gaId,
     },
     
     // Configuración de la aplicación
     app: {
-      isDevelopment: env.app.isDevelopment,
-      isProduction: env.app.isProduction,
+      isDevelopment: envClient.app.isDevelopment,
+      isProduction: envClient.app.isProduction,
     },
   }), []);
 }
@@ -34,18 +35,18 @@ export function useEnv() {
 // Hook específico para Supabase
 export function useSupabaseEnv() {
   return useMemo(() => ({
-    url: env.supabase.url,
-    anonKey: env.supabase.anonKey,
+    url: envClient.supabase.url,
+    anonKey: envClient.supabase.anonKey,
   }), []);
 }
 
 // Hook específico para WhatsApp
 export function useWhatsAppEnv() {
   return useMemo(() => ({
-    phone: env.whatsapp.phone,
+    phone: envClient.whatsapp.phone,
     formatPhone: (phone: string) => phone.replace(/\D/g, ''),
     getWhatsAppUrl: (message: string = '') => {
-      const formattedPhone = env.whatsapp.phone.replace(/\D/g, '');
+      const formattedPhone = envClient.whatsapp.phone.replace(/\D/g, '');
       const encodedMessage = encodeURIComponent(message);
       return `https://wa.me/${formattedPhone}${message ? `?text=${encodedMessage}` : ''}`;
     },
@@ -55,7 +56,7 @@ export function useWhatsAppEnv() {
 // Hook específico para Analytics
 export function useAnalyticsEnv() {
   return useMemo(() => ({
-    gaId: env.analytics.gaId,
-    isEnabled: Boolean(env.analytics.gaId && env.analytics.gaId !== 'G-XXXXXXXXXX'),
+    gaId: envClient.analytics.gaId,
+    isEnabled: Boolean(envClient.analytics.gaId && envClient.analytics.gaId !== 'G-XXXXXXXXXX'),
   }), []);
 }

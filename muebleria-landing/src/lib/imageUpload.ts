@@ -8,7 +8,7 @@ export async function uploadProductImage(file: File, productId: string): Promise
     const fileName = `${productId}-${Date.now()}.${fileExt}`
     
     // Subir imagen a Supabase Storage
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('product-images')
       .upload(fileName, file)
 
