@@ -14,11 +14,13 @@ export const config = {
 const transporter = nodemailer.createTransport({
   host: envServer.email.host,
   port: envServer.email.port,
-  secure: false,
+  secure: envServer.email.port === 465,
   auth: {
     user: envServer.email.user,
     pass: envServer.email.pass,
   },
+  logger: true,
+  debug: true,
 })
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -54,6 +56,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
+      // Verificación SMTP
+      console.log('[SMTP] Verificando conexión...')
+      await transporter.verify()
+      console.log('[SMTP] Conexión SMTP OK')
+
       const emailHtml = `
         <h2>Nueva consulta desde la web</h2>
         <p><strong>Nombre:</strong> ${validatedData.name}</p>
@@ -65,9 +72,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         <hr>
         <p><small>Consulta recibida el ${new Date().toLocaleString('es-AR')}</small></p>
       `
-      console.log('Sending notification email...')
-      await transporter.verify()
-      console.log('Email server is ready')
 
       await transporter.sendMail({
         from: `Mueblería Familiar <${envServer.email.user}>`,
@@ -94,8 +98,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         html: confirmationHtml,
       })
     } catch (emailError: unknown) {
-      const err = emailError as { message?: string; code?: string }
-      console.warn('Email error (pages api, continuing):', err?.code, err?.message)
+      const err = emailError as { message?: string; code?: string; response?: string }
+      console.error('[SMTP] Error:', err?.code, err?.message)
+      if (err?.response) console.error('[SMTP] Response:', err.response)
     }
 
     return res.status(200).json({ success: true, message: 'Consulta enviada exitosamente', inquiryId: inquiry.id })
