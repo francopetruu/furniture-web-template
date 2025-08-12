@@ -1,14 +1,21 @@
 // lib/supabase.ts
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database'
+import { env } from './env'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey)
-
-// Para server-side operations
-export const supabaseAdmin = createClient<Database>(
-  supabaseUrl,
-  process.env.SUPABASE_SERVICE_KEY!
+// Cliente de Supabase para operaciones del lado del cliente
+export const supabase = createClient<Database>(
+  env.supabase.url,
+  env.supabase.anonKey
 )
+
+// Cliente de Supabase para operaciones del lado del servidor (admin)
+export const supabaseAdmin = createClient<Database>(
+  env.supabase.url,
+  env.supabase.serviceKey
+)
+
+// Función helper para obtener el cliente adecuado según el contexto
+export function getSupabaseClient(isAdmin: boolean = false) {
+  return isAdmin ? supabaseAdmin : supabase
+}
