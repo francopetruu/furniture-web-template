@@ -4,6 +4,10 @@ require('dotenv').config({ path: './env.local' })
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // Desactivar React Compiler para evitar error por plugin faltante
+    experimental: {
+      reactCompiler: false,
+    },
     // Configuración de variables de ambiente
     env: {
       NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,

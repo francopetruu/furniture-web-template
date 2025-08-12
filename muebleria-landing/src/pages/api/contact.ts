@@ -1,16 +1,16 @@
-// app/api/contact/route.ts
-export const runtime = 'nodejs'
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-
-import { NextRequest, NextResponse } from 'next/server'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { contactFormSchema, type ContactFormData } from '@/lib/validations'
 import { envServer } from '@/lib/env-server'
 import nodemailer from 'nodemailer'
 import type { Database } from '@/types/database'
 
-// Configurar transporter de email
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+}
+
 const transporter = nodemailer.createTransport({
   host: envServer.email.host,
   port: envServer.email.port,
@@ -21,17 +21,18 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST')
+    return res.status(405).json({ error: 'Method Not Allowed' })
+  }
 
-    // Validar datos
+  try {
+    const body = req.body as unknown
     const validatedData = contactFormSchema.parse(body) as ContactFormData
 
-    // Cliente admin para evitar RLS en inserts
     const supabaseAdmin = getSupabaseAdmin()
 
-    // Guardar en base de datos con service key
     const insertData: Database['public']['Tables']['inquiries']['Insert'] = {
       name: validatedData.name,
       email: validatedData.email,
@@ -48,16 +49,11 @@ export async function POST(request: NextRequest) {
       .single<Database['public']['Tables']['inquiries']['Row']>()
 
     if (dbError) {
-      console.error('Database error (admin insert):', dbError)
-      return NextResponse.json(
-        { error: 'Error al guardar la consulta' },
-        { status: 500 }
-      )
+      console.error('Database error (pages api):', dbError)
+      return res.status(500).json({ error: 'Error al guardar la consulta' })
     }
 
-    // Enviar emails (best-effort)
     try {
-      // Email de notificación
       const emailHtml = `
         <h2>Nueva consulta desde la web</h2>
         <p><strong>Nombre:</strong> ${validatedData.name}</p>
@@ -77,7 +73,6 @@ export async function POST(request: NextRequest) {
         html: emailHtml,
       })
 
-      // Email de confirmación al cliente
       const confirmationHtml = `
         <h2>¡Gracias por tu consulta!</h2>
         <p>Hola ${validatedData.name},</p>
@@ -97,39 +92,12 @@ export async function POST(request: NextRequest) {
       })
     } catch (emailError: unknown) {
       const err = emailError as { message?: string; code?: string }
-      console.warn('Email error (continuing):', err?.code, err?.message)
+      console.warn('Email error (pages api, continuing):', err?.code, err?.message)
     }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Consulta enviada exitosamente',
-      inquiryId: inquiry.id,
-    })
-  } catch (error) {
-    console.error('Contact form error:', error)
-
-    if (error instanceof Error && error.name === 'ZodError') {
-      return NextResponse.json(
-        { error: 'Datos del formulario inválidos' },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    return res.status(200).json({ success: true, message: 'Consulta enviada exitosamente', inquiryId: inquiry.id })
+  } catch (error: unknown) {
+    console.error('Contact form error (pages api):', error)
+    return res.status(500).json({ error: 'Error interno del servidor' })
   }
-}
-
-// Opcional: responder a OPTIONS para evitar 405 en preflight
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  })
 }
