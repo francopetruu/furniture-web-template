@@ -1,6 +1,11 @@
-// Cargar variables de ambiente
+// Cargar variables de ambiente solo en local si existe env.local
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-require('dotenv').config({ path: './env.local' })
+const fs = require('fs')
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+if (process.env.VERCEL !== '1' && fs.existsSync('./env.local')) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('dotenv').config({ path: './env.local' })
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
