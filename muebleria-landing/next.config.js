@@ -2,19 +2,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-      domains: [
-        'your-project.supabase.co',
-        'images.unsplash.com', // Para imágenes de placeholder
-      ],
-      remotePatterns: [
-        {
-          protocol: 'https',
-          hostname: '*.supabase.co',
-          port: '',
-          pathname: '/storage/v1/object/public/**',
-        },
-      ],
-    },
+        remotePatterns: [
+          {
+            protocol: 'https',
+            hostname: 'images.unsplash.com',
+            port: '',
+            pathname: '/**',
+          },
+          {
+            protocol: 'https',
+            hostname: '*.supabase.co',
+            port: '',
+            pathname: '/storage/v1/object/public/**',
+          },
+        ],
+      },
     
     // Optimizaciones de performance
     compiler: {
