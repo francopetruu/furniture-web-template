@@ -65,6 +65,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         <hr>
         <p><small>Consulta recibida el ${new Date().toLocaleString('es-AR')}</small></p>
       `
+      console.log('Sending notification email...')
+      await transporter.verify()
+      console.log('Email server is ready')
 
       await transporter.sendMail({
         from: `Mueblería Familiar <${envServer.email.user}>`,
