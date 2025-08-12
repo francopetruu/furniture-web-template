@@ -19,12 +19,10 @@ export function WhatsAppButton({
   className = "" 
 }: WhatsAppButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
-  
-  const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || "5491123456789"
 
   const handleClick = () => {
     setIsLoading(true)
-    openWhatsAppChat(phoneNumber, message, product)
+    openWhatsAppChat(message, product)
     // Reset loading state after a brief moment
     setTimeout(() => setIsLoading(false), 1000)
   }

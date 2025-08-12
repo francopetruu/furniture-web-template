@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { ProductCard } from './ProductCard'
-import type { Product, Category } from '@/types'
+import type { Product } from '@/types'
 
 interface ProductGridProps {
   categorySlug?: string

@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, cloneElement, isValidElement } from 'react'
 import { createPortal } from 'react-dom'
 
 interface ModalContextType {
@@ -35,14 +35,23 @@ export function Modal({ children, open = false, onOpenChange }: ModalProps) {
   )
 }
 
+interface ClickableProps {
+  onClick?: (e: React.MouseEvent) => void
+}
+
 export function ModalTrigger({ children, asChild = false }: { children: React.ReactNode; asChild?: boolean }) {
   const context = useContext(ModalContext)
   if (!context) throw new Error('ModalTrigger must be used within Modal')
 
   const handleClick = () => context.onOpenChange(true)
 
-  if (asChild && typeof children === 'object' && children !== null && 'props' in children) {
-    return { ...children, props: { ...children.props, onClick: handleClick } }
+  if (asChild && isValidElement<ClickableProps>(children)) {
+    return cloneElement(children, { 
+      onClick: (e: React.MouseEvent) => {
+        children.props.onClick?.(e)
+        handleClick()
+      }
+    })
   }
 
   return <div onClick={handleClick}>{children}</div>
