@@ -2,16 +2,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { contactFormSchema } from '@/lib/validations'
+import { env } from '@/lib/env'
 import nodemailer from 'nodemailer'
 
 // Configurar transporter de email
-const transporter = nodemailer.createTransporter({
-  host: process.env.EMAIL_HOST,
-  port: parseInt(process.env.EMAIL_PORT || '587'),
+const transporter = nodemailer.createTransport({
+  host: env.email.host,
+  port: env.email.port,
   secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: env.email.user,
+    pass: env.email.pass,
   },
 })
 
@@ -55,8 +56,8 @@ export async function POST(request: NextRequest) {
     `
 
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER, // Enviar a tu propio email
+      from: env.email.user,
+      to: env.email.user, // Enviar a tu propio email
       subject: `Nueva consulta: ${validatedData.name}`,
       html: emailHtml,
     })
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
     `
 
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: env.email.user,
       to: validatedData.email,
       subject: 'Confirmación de consulta recibida',
       html: confirmationHtml,
