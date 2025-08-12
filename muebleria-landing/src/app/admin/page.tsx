@@ -7,7 +7,14 @@ import { supabase } from '@/lib/supabase'
 interface DashboardStats {
   totalProducts: number
   totalInquiries: number
-  recentInquiries: any[]
+  recentInquiries: Array<{
+    id: string
+    name: string
+    email: string
+    phone: string
+    message: string
+    created_at: string
+  }>
 }
 
 export default function AdminDashboard() {
