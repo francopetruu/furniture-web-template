@@ -8,7 +8,7 @@ export interface Product {
     discount_price?: number
     category_id?: string
     images: string[]
-    specifications: Record<string, any>
+    specifications: Record<string, string | number | boolean>
     dimensions: {
       width?: number
       height?: number

@@ -1,5 +1,6 @@
 // lib/seo.ts
 import type { Metadata } from 'next'
+import type { Product } from '@/types'
 
 interface SEOProps {
   title?: string

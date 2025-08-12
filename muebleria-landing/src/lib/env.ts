@@ -16,7 +16,7 @@ function getEnvVar(name: string, defaultValue?: string): string {
 function getClientEnvVar(name: string, defaultValue?: string): string {
   if (typeof window !== 'undefined') {
     // En el cliente, usar las variables expuestas por Next.js
-    return (window as any).__NEXT_DATA__?.props?.pageProps?.env?.[name] || 
+    return (window as { __NEXT_DATA__?: { props?: { pageProps?: { env?: Record<string, string> } } } }).__NEXT_DATA__?.props?.pageProps?.env?.[name] || 
            process.env[name] || 
            defaultValue || '';
   }
